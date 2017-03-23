@@ -2978,7 +2978,33 @@ func TestSelect_Integral_Float_GroupByTime(t *testing.T) {
 	} else if !deep.Equal(a, [][]influxql.Point{
 		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 100}},
 		{&influxql.FloatPoint{Name: "cpu", Time: 20 * Second, Value: -50}},
-		{&influxql.FloatPoint{Name: "cpu", Time: 40 * Second, Nil: true}},
+	}) {
+		t.Fatalf("unexpected points: %s", spew.Sdump(a))
+	}
+}
+
+func TestSelect_Integral_Float_InterpolateGroupByTime(t *testing.T) {
+	var ic IteratorCreator
+	ic.CreateIteratorFn = func(m *influxql.Measurement, opt influxql.IteratorOptions) (influxql.Iterator, error) {
+		if m.Name != "cpu" {
+			t.Fatalf("unexpected source: %s", m.Name)
+		}
+		return &FloatIterator{Points: []influxql.FloatPoint{
+			{Name: "cpu", Time: 10 * Second, Value: 20},
+			{Name: "cpu", Time: 15 * Second, Value: 10},
+			{Name: "cpu", Time: 25 * Second, Value: 0},
+			{Name: "cpu", Time: 30 * Second, Value: -10},
+		}}, nil
+	}
+
+	itrs, err := influxql.Select(MustParseSelectStatement(`SELECT integral(value) FROM cpu WHERE time > 0s AND time < 60s GROUP BY time(20s)`), &ic, nil)
+	if err != nil {
+		t.Fatal(err)
+	} else if a, err := Iterators(itrs).ReadAll(); err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	} else if !deep.Equal(a, [][]influxql.Point{
+		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 112.5}},
+		{&influxql.FloatPoint{Name: "cpu", Time: 20 * Second, Value: -12.5}},
 	}) {
 		t.Fatalf("unexpected points: %s", spew.Sdump(a))
 	}
