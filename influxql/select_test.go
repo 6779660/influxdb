@@ -2950,7 +2950,7 @@ func TestSelect_Integral_Float(t *testing.T) {
 	} else if a, err := Iterators(itrs).ReadAll(); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	} else if !deep.Equal(a, [][]influxql.Point{
-		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 50, Aggregated: 4}},
+		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 50}},
 	}) {
 		t.Fatalf("unexpected points: %s", spew.Sdump(a))
 	}
@@ -2976,8 +2976,8 @@ func TestSelect_Integral_Float_GroupByTime(t *testing.T) {
 	} else if a, err := Iterators(itrs).ReadAll(); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	} else if !deep.Equal(a, [][]influxql.Point{
-		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 75, Aggregated: 2}},
-		{&influxql.FloatPoint{Name: "cpu", Time: 20 * Second, Value: -50, Aggregated: 2}},
+		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 100}},
+		{&influxql.FloatPoint{Name: "cpu", Time: 20 * Second, Value: -50}},
 		{&influxql.FloatPoint{Name: "cpu", Time: 40 * Second, Nil: true}},
 	}) {
 		t.Fatalf("unexpected points: %s", spew.Sdump(a))
@@ -3004,7 +3004,7 @@ func TestSelect_Integral_Integer(t *testing.T) {
 	} else if a, err := Iterators(itrs).ReadAll(); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	} else if !deep.Equal(a, [][]influxql.Point{
-		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 50, Aggregated: 4}},
+		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 50}},
 	}) {
 		t.Fatalf("unexpected points: %s", spew.Sdump(a))
 	}
@@ -3030,7 +3030,7 @@ func TestSelect_Integral_Duplicate_Float(t *testing.T) {
 	} else if a, err := Iterators(itrs).ReadAll(); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	} else if !deep.Equal(a, [][]influxql.Point{
-		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 250, Aggregated: 4}},
+		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 250}},
 	}) {
 		t.Fatalf("unexpected points: %s", spew.Sdump(a))
 	}
@@ -3056,7 +3056,7 @@ func TestSelect_Integral_Duplicate_Integer(t *testing.T) {
 	} else if a, err := Iterators(itrs).ReadAll(); err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	} else if !deep.Equal(a, [][]influxql.Point{
-		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 125, Aggregated: 4}},
+		{&influxql.FloatPoint{Name: "cpu", Time: 0, Value: 125}},
 	}) {
 		t.Fatalf("unexpected points: %s", spew.Sdump(a))
 	}

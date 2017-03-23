@@ -760,7 +760,6 @@ func (r *FloatHoltWintersReducer) constrain(x []float64) {
 
 // FloatIntegralReducer calculates the time-integral of the aggregated points.
 type FloatIntegralReducer struct {
-	count    uint32
 	interval Interval
 	sum      float64
 	prev     FloatPoint
@@ -780,7 +779,6 @@ func (r *FloatIntegralReducer) AggregateFloat(p *FloatPoint) {
 	// If this is the first point, just save it
 	if r.prev.Nil {
 		r.prev = *p
-		r.count++
 		return
 	}
 
@@ -791,7 +789,6 @@ func (r *FloatIntegralReducer) AggregateFloat(p *FloatPoint) {
 	// actually arrive in any particular order...?
 	if r.prev.Time == p.Time {
 		r.prev = *p
-		r.count++
 		return
 	}
 
@@ -799,7 +796,6 @@ func (r *FloatIntegralReducer) AggregateFloat(p *FloatPoint) {
 	elapsed := float64(p.Time-r.prev.Time) / float64(r.interval.Duration)
 	r.sum += 0.5 * (p.Value + r.prev.Value) * elapsed
 	r.prev = *p
-	r.count++
 	return
 }
 
@@ -809,15 +805,13 @@ func (r *FloatIntegralReducer) AggregateFloat(p *FloatPoint) {
 // and a higher level will change it to the start of the time group.
 func (r *FloatIntegralReducer) Emit() []FloatPoint {
 	return []FloatPoint{{
-		Time:       ZeroTime,
-		Value:      r.sum,
-		Aggregated: r.count,
+		Time:  ZeroTime,
+		Value: r.sum,
 	}}
 }
 
 // IntegerIntegralReducer calculates the time-integral of the aggregated points.
 type IntegerIntegralReducer struct {
-	count    uint32
 	interval Interval
 	sum      float64
 	prev     IntegerPoint
@@ -837,7 +831,6 @@ func (r *IntegerIntegralReducer) AggregateInteger(p *IntegerPoint) {
 	// If this is the first point, just save it
 	if r.prev.Nil {
 		r.prev = *p
-		r.count++
 		return
 	}
 
@@ -848,7 +841,6 @@ func (r *IntegerIntegralReducer) AggregateInteger(p *IntegerPoint) {
 	// actually arrive in any particular order...?
 	if r.prev.Time == p.Time {
 		r.prev = *p
-		r.count++
 		return
 	}
 
@@ -856,7 +848,6 @@ func (r *IntegerIntegralReducer) AggregateInteger(p *IntegerPoint) {
 	elapsed := float64(p.Time-r.prev.Time) / float64(r.interval.Duration)
 	r.sum += 0.5 * float64(p.Value+r.prev.Value) * elapsed
 	r.prev = *p
-	r.count++
 	return
 }
 
@@ -866,8 +857,7 @@ func (r *IntegerIntegralReducer) AggregateInteger(p *IntegerPoint) {
 // and a higher level will change it to the start of the time group.
 func (r *IntegerIntegralReducer) Emit() []FloatPoint {
 	return []FloatPoint{{
-		Time:       ZeroTime,
-		Value:      r.sum,
-		Aggregated: r.count,
+		Time:  ZeroTime,
+		Value: r.sum,
 	}}
 }
